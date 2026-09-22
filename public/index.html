@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GD Insta Scheduler — Umbrel</title>
+<style>
+:root{--bg:#0f0f14;--card:#1a1a22;--line:#2a2a36;--txt:#f2f2f5;--mut:#a7a7b8;--acc:#e1306c;--acc2:#f77737;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;background:linear-gradient(135deg,#0f0f14,#1c1030);color:var(--txt);min-height:100vh}
+header{position:sticky;top:0;z-index:5;background:rgba(15,15,20,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.wrap{max-width:1080px;margin:0 auto;padding:16px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);display:grid;place-items:center;font-size:22px}
+h1{font-size:18px;margin:0}small{color:var(--mut)}
+nav{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}nav button{background:var(--card);color:var(--txt);border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer;font-size:14px}nav button.on{background:linear-gradient(45deg,var(--acc),var(--acc2));border-color:transparent;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}input,textarea,select{width:100%;background:#101018;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font-size:14px}textarea{min-height:90px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap}.btn{background:linear-gradient(45deg,var(--acc),var(--acc2));border:0;color:#fff;font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer}.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);font-weight:400}.btn.sm{padding:6px 10px;font-size:13px}.preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.preview img,.preview video{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.post{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:#14141c}.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--line)}.b-bozza{color:#cbd5e1}.b-programmato{color:var(--warn);border-color:var(--warn)}.b-pubblicato{color:var(--ok);border-color:var(--ok)}.b-errore{color:var(--err);border-color:var(--err)}.b-pubblicazione{color:#38bdf8;border-color:#38bdf8}.meta{color:var(--mut);font-size:12px;margin-top:6px}.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;border-bottom:1px dashed var(--line);padding:6px 0}.ok{color:var(--ok)}.er{color:var(--err)}.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.dow{color:var(--mut);font-size:12px;text-align:center}.day{min-height:74px;background:#12121a;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:12px}.day.today{border-color:var(--acc)}.dot{display:block;background:linear-gradient(45deg,var(--acc),var(--acc2));border-radius:6px;padding:2px 4px;margin:2px 0;color:#fff;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+footer{color:var(--mut);font-size:12px;text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="brand"><div class="logo">📸</div><div><h1>GD Insta Scheduler</h1><small>Programma e pubblica su Instagram da Umbrel OS • Graph API</small></div></div>
+<nav>
+<button data-tab="nuovo" class="on">✍️ Nuovo post</button>
+<button data-tab="lista">🗓️ Programmati</button>
+<button data-tab="storico">📜 Cronologia</button>
+<button data-tab="log">🧾 Log</button>
+<button data-tab="setup">🔗 Account</button>
+</nav>
+</div></header>
+<main class="wrap">
+
+<section id="tab-nuovo" class="grid">
+<div class="card">
+<h3>Componi</h3>
+<label>Media (JPG/PNG/WebP/MP4, max 10)</label>
+<input type="file" id="files" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime">
+<div class="preview" id="preview"></div>
+<label>Caption (max 2200)</label>
+<textarea id="caption" placeholder="Scrivi la caption… #hashtag"></textarea>
+<div class="row">
+<div style="flex:1"><label>Tipo</label><select id="mtype"><option value="single">Singolo</option><option value="carousel">Carosello</option><option value="reel">Reel/Video</option></select></div>
+<div style="flex:1"><label>Data/ora (vuoto = bozza)</label><input type="datetime-local" id="sched"></div>
+</div>
+<div class="row" style="margin-top:12px"><button class="btn" id="save">💾 Salva</button><span class="meta" id="saveMsg"></span></div>
+<p class="meta">I media devono essere raggiungibili da Meta tramite URL pubblico: imposta <b>PUBLIC_URL</b> in Account (es. <code>http://umbrel.local:8757</code> o il tuo dominio/Tailscale). Senza URL pubblico la pubblicazione fallisce.</p>
+</div>
+<div class="card">
+<h3>Calendario</h3>
+<div class="row"><button class="btn ghost sm" id="prevM">←</button><b id="calTitle"></b><button class="btn ghost sm" id="nextM">→</button></div>
+<div class="cal" id="cal" style="margin-top:10px"></div>
+</div>
+</section>
+
+<section id="tab-lista" class="card" hidden>
+<h3>Post programmati e bozze</h3>
+<div class="row"><select id="filtro"><option value="">Tutti</option><option>bozza</option><option>programmato</option><option>pubblicazione</option></select><button class="btn ghost sm" id="reload">↻ Ricarica</button></div>
+<div id="lista"></div>
+</section>
+
+<section id="tab-storico" class="card" hidden>
+<h3>Pubblicati / errori</h3><div id="storico"></div>
+</section>
+
+<section id="tab-log" class="card" hidden>
+<h3>Log di pubblicazione</h3><div class="row"><button class="btn ghost sm" id="reloadLog">↻ Ricarica log</button></div><div id="logs"></div>
+</section>
+
+<section id="tab-setup" class="card" hidden>
+<h3>Collega l'account Instagram</h3>
+<p class="meta">Serve un account <b>Business/Creator</b> collegato a una Pagina Facebook + app su <b>Meta for Developers</b> con permesso <code>instagram_content_publish</code>. Incolla qui IG User ID e Access Token (long-lived).</p>
+<label>Instagram User ID</label><input id="ig_user" placeholder="es. 1784140...">
+<label>Access Token (long-lived)</label><input id="ig_token" type="password" placeholder="EAA...">
+<label>App Secret (per rinnovo token)</label><input id="ig_secret" type="password" placeholder="opzionale">
+<label>PUBLIC_URL (come Meta vede questo Umbrel)</label><input id="pub_url" placeholder="http://umbrel.local:8757">
+<div class="row" style="margin-top:12px"><button class="btn" id="saveSetup">💾 Salva</button><button class="btn ghost" id="testConn">🔌 Testa connessione</button><span class="meta" id="setupMsg"></span></div>
+<div id="acct" class="meta"></div>
+</section>
+
+</main>
+<footer>GD Insta Scheduler 1.0.0 • SQLite + cron ogni minuto • statuti: bozza → programmato → pubblicato / errore</footer>
+<script>
+const $=s=>document.querySelector(s);
+let POSTS=[], calCursor=new Date(); calCursor.setDate(1);
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');['nuovo','lista','storico','log','setup'].forEach(t=>$('#tab-'+t).hidden=t!==b.dataset.tab); if(b.dataset.tab==='lista')loadPosts(); if(b.dataset.tab==='storico')loadPosts(); if(b.dataset.tab==='log')loadLogs(); if(b.dataset.tab==='setup')loadSetup();});
+$('#files').onchange=e=>{const p=$('#preview');p.innerHTML='';[...e.target.files].forEach(f=>{const u=URL.createObjectURL(f);p.innerHTML+=f.type.startsWith('video')?`<video src="${u}" controls></video>`:`<img src="${u}">`;});};
+async function api(m,u,b,isForm){const o={method:m};if(isForm)o.body=b;else if(b){o.headers={'Content-Type':'application/json'};o.body=JSON.stringify(b);}const r=await fetch(u,o);return r.json();}
+$('#save').onclick=async()=>{const fd=new FormData();[...$('#files').files].forEach(f=>fd.append('files',f));fd.append('caption',$('#caption').value);fd.append('media_type',$('#mtype').value);if($('#sched').value)fd.append('scheduled_at',new Date($('#sched').value).toISOString());$('#saveMsg').textContent='Salvataggio…';const j=await api('POST','/api/posts',fd,true);$('#saveMsg').textContent=j.ok?'Salvato (#'+j.post.id+')':'Errore: '+(j.error||'');if(j.ok){$('#caption').value='';$('#files').value='';$('#preview').innerHTML='';loadPosts();drawCal();}};
+async function loadPosts(){const f=$('#filtro').value;const j=await api('GET','/api/posts'+(f?'?status='+f:''));POSTS=j.map?j:(j.posts||j);renderLista();renderStorico();drawCal();}
+function badge(s){return `<span class="badge b-${s}">${s}</span>`;}
+function card(p){const d=p.scheduled_at?new Date(p.scheduled_at).toLocaleString('it-IT'):'—';const thumbs=(p.media_paths||[]).map(f=>{const ext=f.split('.').pop().toLowerCase();return ext==='mp4'||ext==='mov'?`<video src="/uploads/${encodeURIComponent(f)}" width="72" height="72" style="object-fit:cover;border-radius:8px"></video>`:`<img src="/uploads/${encodeURIComponent(f)}" width="72" height="72" style="object-fit:cover;border-radius:8px">`;}).join(' ');return `<div class="post">${badge(p.status)} <b>#${p.id}</b> <span class="meta">${d} • ${p.media_type}</span><div style="margin:6px 0">${(p.caption||'').slice(0,220)}</div><div>${thumbs}</div>${p.permalink?`<div><a href="${p.permalink}" target="_blank" style="color:#38bdf8">Vedi su Instagram ↗</a></div>`:''}${p.error?`<div class="meta" style="color:#ef4444">${p.error}</div>`:''}<div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="now(${p.id})">🚀 Pubblica ora</button><button class="btn ghost sm" onclick="retry(${p.id})">↻ Riprova</button><button class="btn ghost sm" onclick="del(${p.id})">🗑️</button></div></div>`;}
+function renderLista(){$('#lista').innerHTML=POSTS.filter(p=>['bozza','programmato','pubblicazione'].includes(p.status)).map(card).join('')||'<p class="meta">Niente qui.</p>';}
+function renderStorico(){$('#storico').innerHTML=POSTS.filter(p=>['pubblicato','errore'].includes(p.status)).map(card).join('')||'<p class="meta">Nessuna cronologia.</p>';}
+window.now=async id=>{await api('POST',`/api/posts/${id}/publish-now`,{});loadPosts();};
+window.retry=async id=>{await api('POST',`/api/posts/${id}/retry`,{});loadPosts();};
+window.del=async id=>{if(confirm('Eliminare il post #'+id+'?')){await api('DELETE',`/api/posts/${id}`);loadPosts();}};
+$('#reload').onclick=loadPosts;$('#filtro').onchange=loadPosts;
+async function loadLogs(){const j=await api('GET','/api/logs?limit=150');$('#logs').innerHTML=(j||[]).map(l=>`<div class="log"><span class="${l.level==='error'?'er':l.level==='success'?'ok':''}">[${l.level}]</span> ${l.created_at} ${l.post_id?'#'+l.post_id:''} — ${l.message}</div>`).join('');}
+$('#reloadLog').onclick=loadLogs;
+async function loadSetup(){const j=await api('GET','/api/settings');$('#ig_user').value=j.ig_user_id||'';$('#pub_url').value=j.public_url||'';$('#acct').textContent=j.has_token?`Token salvato (…${j.access_token_masked})`:'Nessun token salvato';}
+$('#saveSetup').onclick=async()=>{const b={ig_user_id:$('#ig_user').value,public_url:$('#pub_url').value};if($('#ig_token').value)b.access_token=$('#ig_token').value;if($('#ig_secret').value)b.app_secret=$('#ig_secret').value;const j=await api('POST','/api/settings',b);$('#setupMsg').textContent=j.ok?'Salvato':'Errore';loadSetup();};
+$('#testConn').onclick=async()=>{const j=await api('POST','/api/connect/test',{});$('#acct').textContent=j.ok?`OK: @${j.account.username} (${j.account.account_type}, ${j.account.media_count} media)`:'Errore: '+(j.error||'');};
+function drawCal(){const y=calCursor.getFullYear(),m=calCursor.getMonth();$('#calTitle').textContent=calCursor.toLocaleDateString('it-IT',{month:'long',year:'numeric'});const first=new Date(y,m,1);let start=(first.getDay()+6)%7;const days=new Date(y,m+1,0).getDate();let h=['L','M','M','G','V','S','D'].map(d=>`<div class="dow">${d}</div>`).join('');for(let i=0;i<start;i++)h+='<div></div>';const today=new Date().toDateString();for(let d=1;d<=days;d++){const dt=new Date(y,m,d);const items=POSTS.filter(p=>p.scheduled_at&&new Date(p.scheduled_at).toDateString()===dt.toDateString());h+=`<div class="day ${dt.toDateString()===today?'today':''}"><b>${d}</b>${items.map(p=>`<span class="dot">#${p.id} ${p.status}</span>`).join('')}</div>`;}$('#cal').innerHTML=h;}
+$('#prevM').onclick=()=>{calCursor.setMonth(calCursor.getMonth()-1);drawCal();};$('#nextM').onclick=()=>{calCursor.setMonth(calCursor.getMonth()+1);drawCal();};
+loadPosts();loadSetup();
+</script>
+</body>
+</html>
