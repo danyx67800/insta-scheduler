@@ -1,6 +1,6 @@
 {
   "name": "insta-scheduler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Programma e pubblica automaticamente post su Instagram da Umbrel OS (Instagram Graph API)",
   "main": "server.js",
   "type": "commonjs",

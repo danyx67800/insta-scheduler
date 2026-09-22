@@ -5,7 +5,7 @@ Programma e pubblica automaticamente post su Instagram dal tuo Umbrel. Backend *
 Questa repo contiene il **codice dell'app + Dockerfile**. I file per lo store Umbrel (`umbrel-app.yml`, `docker-compose.yml`) stanno qui:
 **[Gigiomiccio425/Gigio-dany-appstore — `g-d-app-store-gd-insta-scheduler/`](https://github.com/Gigiomiccio425/Gigio-dany-appstore/tree/master/g-d-app-store-gd-insta-scheduler)**
 
-Immagine pubblicata: `ghcr.io/danyx67800/insta-scheduler:1.0.0` (multi-arch `linux/amd64` + `linux/arm64`, build automatica via GitHub Actions).
+Immagine pubblicata: `ghcr.io/danyx67800/insta-scheduler:1.0.1` (multi-arch `linux/amd64` + `linux/arm64`, build automatica via GitHub Actions).
 
 ## Avvio rapido (locale)
 
@@ -19,10 +19,10 @@ npm start              # http://localhost:8757
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
-  -t ghcr.io/danyx67800/insta-scheduler:1.0.0 .
+  -t ghcr.io/danyx67800/insta-scheduler:1.0.1 .
 ```
 
-La build/release ufficiale gira su GitHub Actions (`.github/workflows/docker-publish.yml`): a ogni push su `main` pubblica `:1.0.0` + `:latest` su GHCR.
+La build/release ufficiale gira su GitHub Actions (`.github/workflows/docker-publish.yml`): a ogni push su `main` pubblica `:<versione-da-package.json>` + `:latest` su GHCR.
 
 I dati stanno in `/data` (su Umbrel: volume `${APP_DATA_DIR}/data`):
 - `scheduler.db` — post (`bozza`/`programmato`/`pubblicato`/`errore`), settings, log

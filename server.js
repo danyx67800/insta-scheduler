@@ -25,6 +25,14 @@ const cron = require('node-cron');
 const axios = require('axios');
 require('dotenv').config();
 
+const APP_VERSION = (() => {
+  try {
+    return require('./package.json').version || '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+})();
+
 const PORT = parseInt(process.env.PORT || '8757', 10);
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
@@ -292,7 +300,7 @@ async function publishPost(postId) {
 
 // ------------------------------------------------------------ API
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, version: '1.0.0', time: new Date().toISOString(), dataDir: DATA_DIR });
+  res.json({ ok: true, version: APP_VERSION, time: new Date().toISOString(), dataDir: DATA_DIR });
 });
 
 app.get('/api/settings', (_req, res) => {
